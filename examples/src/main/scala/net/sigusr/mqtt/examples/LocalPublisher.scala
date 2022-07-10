@@ -38,7 +38,7 @@ object LocalPublisher extends IOApp {
       val messages = args.toVector
       val transportConfig =
         TransportConfig[IO](
-          Host.fromString("localhost").get,
+          Host.fromString("127.0.0.1").get,
           Port.fromString("1883").get,
           // TLS support looks like
           // 8883,
@@ -46,7 +46,7 @@ object LocalPublisher extends IOApp {
           traceMessages = true
         )
       val sessionConfig =
-        SessionConfig(s"$localPublisher", user = Some(localPublisher), password = Some("yala"), keepAlive = 5)
+        SessionConfig(s"$localPublisher", user = Some("username"), password = Some("password"), keepAlive = 5)
       implicit val console: Console[IO] = Console.make[IO]
       Session[IO](transportConfig, sessionConfig)
         .use { session =>

@@ -53,7 +53,7 @@ object LocalSubscriber extends App {
     )
     val transportConfig =
       TransportConfig[Task](
-        Host.fromString("localhost").get,
+        Host.fromString("127.0.0.1").get,
         Port.fromString("1883").get,
         // TLS support looks like
         // 8883,
@@ -65,8 +65,8 @@ object LocalSubscriber extends App {
       SessionConfig(
         s"$localSubscriber",
         cleanSession = false,
-        user = Some(localSubscriber),
-        password = Some("yolo"),
+        user = Some("username"),
+        password = Some("password"),
         keepAlive = 5
       )
     implicit val console: Console[Task] = Console.make[Task]
@@ -89,8 +89,7 @@ object LocalSubscriber extends App {
             }
             _ <- ZIO.sleep(Duration(23, TimeUnit.SECONDS))
             _ <- session.unsubscribe(unsubscribedTopics)
-            _ <-
-              putStrLn[Task](s"Topic ${scala.Console.CYAN}${unsubscribedTopics.mkString(", ")}${scala.Console.RESET} unsubscribed")
+            _ <- putStrLn[Task](s"Topic ${scala.Console.CYAN}${unsubscribedTopics.mkString(", ")}${scala.Console.RESET} unsubscribed")
             _ <- stopSignal.discrete.compile.drain
           } yield ()
           val reader = session.messages.flatMap(processMessages(stopSignal)).interruptWhen(stopSignal).compile.drain
